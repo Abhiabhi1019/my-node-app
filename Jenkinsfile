@@ -9,14 +9,17 @@ metadata:
     jenkins: kaniko
 spec:
   containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-      - name: kaniko-secret
-        mountPath: /kaniko/.docker
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:latest
+      args:
+        - "--dockerfile=Dockerfile"
+        - "--context=dir://workspace"
+        - "--destination=registry.kube-system.svc.cluster.local:5000/my-node-app:\${BUILD_NUMBER}"
+        - "--insecure"
+        - "--insecure-push"
+      volumeMounts:
+        - name: kaniko-secret
+          mountPath: /kaniko/.docker
   volumes:
     - name: kaniko-secret
       secret:
@@ -28,9 +31,10 @@ spec:
 
   environment {
     APP_NAME = "my-node-app"
-    IMAGE_TAG = "registry.kube-system.svc.cluster.local:5000/my-node-app:\${BUILD_NUMBER}"
+    IMAGE_TAG = "registry.kube-system.svc.cluster.local:5000/my-node-app:${BUILD_NUMBER}"
     ARGOCD_APP = "my-node-app"
     ARGOCD_SERVER = "argocd-server.argocd.svc.cluster.local"
+    ARGOCD_AUTH_TOKEN = credentials('argocd-token-secret-id') // Use Jenkins secret ID here
   }
 
   stages {
@@ -43,22 +47,13 @@ spec:
     stage('Build & Push with Kaniko') {
       steps {
         container('kaniko') {
-          sh '''
-            /kaniko/executor \
-              --dockerfile=Dockerfile \
-              --context=. \
-              --destination=$IMAGE_TAG \
-              --insecure \
-              --insecure-push
-          '''
+          // No additional shell steps needed; args are already set in the pod template
+          echo "Kaniko build running with arguments defined in pod YAML."
         }
       }
     }
 
     stage('Deploy via ArgoCD') {
-      environment {
-        ARGOCD_AUTH_TOKEN = credentials('ARGOCD_AUTH_TOKEN') // ID from Jenkins secret
-      }
       steps {
         sh '''
           curl -k -H "Authorization: Bearer $ARGOCD_AUTH_TOKEN" \
