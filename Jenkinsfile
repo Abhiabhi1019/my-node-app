@@ -14,7 +14,7 @@ podTemplate(
       checkout scm
     }
 
-    stage('Build & Push Docker Image') {
+    stage('Build and Push Docker Image') {
       container('kaniko') {
         sh '''
           /kaniko/executor \
