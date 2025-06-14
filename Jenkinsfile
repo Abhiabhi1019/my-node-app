@@ -4,8 +4,6 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      command: '/busybox/sh',
-      args: '-c cat',                 // ✅ Fix here
       ttyEnabled: true
     )
   ],
@@ -16,7 +14,7 @@ podTemplate(
       checkout scm
     }
 
-    stage('Build & Push') {
+    stage('Build & Push Docker Image') {
       container('kaniko') {
         sh '''
           /kaniko/executor \
@@ -30,4 +28,3 @@ podTemplate(
     }
   }
 }
-
