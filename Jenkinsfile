@@ -4,14 +4,14 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      command: '',
-      args: '',
+      command: '/busybox/cat',       // Required dummy command for container to stay alive
       ttyEnabled: true
     )
   ],
+  imagePullSecrets: ['regcred'],      // Pull image using DockerHub credentials
   volumes: [
     secretVolume(
-      secretName: 'regcred', 
+      secretName: 'regcred',
       mountPath: '/kaniko/.docker'
     )
   ]
@@ -21,8 +21,8 @@ podTemplate(
       checkout([$class: 'GitSCM',
         branches: [[name: '*/main']],
         userRemoteConfigs: [[
-          url: 'https://github.com/Abhiachu@1019/your-repo.git',
-          credentialsId: 'a49b6730-4f6f-4778-9345-e6f1119436cd'  // Replace with your Jenkins GitHub credential ID
+          url: 'https://github.com/Abhiachu@1019/your-repo.git', // Check: this might be malformed
+          credentialsId: 'a49b6730-4f6f-4778-9345-e6f1119436cd'
         ]]
       ])
     }
