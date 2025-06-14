@@ -31,8 +31,7 @@ spec:
     IMAGE_TAG = "registry.kube-system.svc.cluster.local:5000/my-node-app:${BUILD_NUMBER}"
     ARGOCD_APP = "my-node-app"
     ARGOCD_SERVER = "argocd-server.argocd.svc.cluster.local"
-    ARGOCD_AUTH_TOKEN = credentials('
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjphcGlLZXkiLCJuYmYiOjE3NDk4OTY3ODMsImlhdCI6MTc0OTg5Njc4MywianRpIjoiYTk2Y2QyOTQtMDg5OS00MGIxLWIzY2YtZWVhYWIwYzdhZWRjIn0.RhRXhlykd12kQ76GVuWZ807YTOohlSjWcFp44H7jgAQ') // set in Jenkins
+    ARGOCD_AUTH_TOKEN = credentials('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjphcGlLZXkiLCJuYmYiOjE3NDk4OTY3ODMsImlhdCI6MTc0OTg5Njc4MywianRpIjoiYTk2Y2QyOTQtMDg5OS00MGIxLWIzY2YtZWVhYWIwYzdhZWRjIn0.RhRXhlykd12kQ76GVuWZ807YTOohlSjWcFp44H7jgAQ') // set in Jenkins
   }
 
   stages {
