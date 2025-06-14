@@ -4,17 +4,18 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
+      command: '',
+      args: '',
       ttyEnabled: true
     )
-  ],
-  imagePullSecrets: ['regcred']
+  ]
 ) {
   node('kaniko-agent') {
-    stage('Checkout') {
+    stage('Clone Repo') {
       checkout scm
     }
 
-    stage('Build and Push Docker Image') {
+    stage('Build & Push Image') {
       container('kaniko') {
         sh '''
           /kaniko/executor \
