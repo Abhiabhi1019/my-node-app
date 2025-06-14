@@ -4,31 +4,31 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      command: '/busybox/sh',   // valid command required by Kubernetes
-      args: ['-c', 'cat'],      // dummy command so container starts cleanly
+      command: '/busybox/sh',
+      args: ['-c', 'cat'],
       ttyEnabled: true
     )
   ],
   imagePullSecrets: ['regcred']
 ) {
   node('kaniko-agent') {
-    stage('Checkout Code') {
+    stage('Checkout') {
       checkout([$class: 'GitSCM',
         branches: [[name: '*/main']],
         userRemoteConfigs: [[
-          url: 'https://github.com/Abhiachu@1019/your-repo.git',
-          credentialsId: 'a49b6730-4f6f-4778-9345-e6f1119436cd'
+          url: 'https://github.com/your-user/your-repo.git',
+          credentialsId: 'your-creds-id'
         ]]
       ])
     }
 
-    stage('Build & Push with Kaniko') {
+    stage('Build & Push') {
       container('kaniko') {
         sh '''
         /kaniko/executor \
-          --context `pwd` \
-          --dockerfile `pwd`/Dockerfile \
-          --destination localhost:5000/my-node-app:latest \
+          --context=dir://$(pwd) \
+          --dockerfile=Dockerfile \
+          --destination=localhost:5000/my-node-app:latest \
           --insecure \
           --skip-tls-verify
         '''
