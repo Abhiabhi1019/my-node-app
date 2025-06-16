@@ -1,30 +1,34 @@
 podTemplate(
-  containers: [
-    containerTemplate(
-      name: 'kaniko',
-      image: 'gcr.io/kaniko-project/executor:v1.22.0',
-      command: ["/kaniko/executor"],
-      args: [
-        "--context=dir:///workspace",
-        "--dockerfile=/workspace/Dockerfile",
-        "--destination=registry.container-registry.svc.cluster.local:5000/my-node-app:latest",
-        "--insecure",
-        "--skip-tls-verify"
-      ],
-      volumeMounts: [
-        volumeMount(mountPath: '/workspace', name: 'workspace'),
-        volumeMount(mountPath: '/kaniko/.docker', name: 'docker-config')
-      ]
-    )
-  ],
-  volumes: [
-    hostPathVolume(hostPath: '/home/abhi/my-node-app', mountPath: '/workspace'),
-    secretVolume(secretName: 'regcred', mountPath: '/kaniko/.docker')
-  ]
+  name: 'kaniko',
+  yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: regcred
+"""
 ) {
-  node(POD_LABEL) {
+  node('kaniko') {
     container('kaniko') {
-      echo "Building image..."
+      sh '''#!/busybox/sh
+        /kaniko/executor \
+          --context `pwd` \
+          --dockerfile `pwd`/Dockerfile \
+          --destination registry.container-registry.svc.cluster.local:5000/test:latest \
+          --insecure \
+          --skip-tls-verify
+      '''
     }
   }
 }
