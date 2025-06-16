@@ -8,11 +8,7 @@ spec:
   containers:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:latest
-      command:
-        - /busybox/sh
-      args:
-        - -c
-        - "while true; do sleep 30; done"
+      tty: true
       volumeMounts:
         - name: kaniko-secret
           mountPath: /kaniko/.docker
@@ -32,7 +28,14 @@ spec:
     stage('Build Image') {
       steps {
         container('kaniko') {
-          sh '/kaniko/executor --context `pwd` --dockerfile `pwd`/Dockerfile --destination=my-registry/my-node-app:latest --insecure --skip-tls-verify'
+          sh '''
+            /kaniko/executor \
+              --context `pwd` \
+              --dockerfile `pwd`/Dockerfile \
+              --destination=my-registry/my-node-app:latest \
+              --insecure \
+              --skip-tls-verify
+          '''
         }
       }
     }
