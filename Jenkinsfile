@@ -4,7 +4,7 @@ podTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:v1.22.0',
       ttyEnabled: true,
-      command: '' // ✅ Must be empty so Kaniko uses default ENTRYPOINT
+      command: '' // ✅ Empty to use Kaniko default entrypoint
     )
   ],
   volumes: [
@@ -17,7 +17,7 @@ podTemplate(
         /kaniko/executor \
           --context `pwd` \
           --dockerfile `pwd`/Dockerfile \
-          --destination=localhost:32000/my-node-app:latest \
+          --destination=registry.container-registry.svc.cluster.local:5000/my-node-app:latest \
           --insecure \
           --skip-tls-verify
       '''
