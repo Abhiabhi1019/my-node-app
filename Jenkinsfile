@@ -2,7 +2,7 @@ podTemplate(
   containers: [
     containerTemplate(
       name: 'kaniko',
-      image: 'gcr.io/kaniko-project/executor:latest',
+      image: 'gcr.io/kaniko-project/executor:v1.22.0',
       ttyEnabled: true,
       command: '' // ✅ Must be empty so Kaniko uses default ENTRYPOINT
     )
