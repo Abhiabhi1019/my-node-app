@@ -1,9 +1,9 @@
-yaml """
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    jenkins: kaniko
 spec:
   containers:
     - name: kaniko
@@ -24,5 +24,17 @@ spec:
         secretName: regcred
     - name: workspace-volume
       emptyDir: {}
-  restartPolicy: Never
 """
+    }
+  }
+
+  stages {
+    stage('Build Image') {
+      steps {
+        container('kaniko') {
+          sh '/kaniko/executor --context `pwd` --dockerfile `pwd`/Dockerfile --destination=my-registry/my-node-app:latest --insecure --skip-tls-verify'
+        }
+      }
+    }
+  }
+}
