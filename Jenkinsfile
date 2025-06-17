@@ -1,40 +1,24 @@
-pipeline {
-    agent {
-        kubernetes {
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: kaniko-secret
-      mountPath: /kaniko/.docker
-  volumes:
-  - name: kaniko-secret
-    projected:
-      sources:
-      - secret:
-          name: regcred
-"""
-        }
+podTemplate(
+  containers: [
+    containerTemplate(
+      name: 'kaniko',
+      image: 'gcr.io/kaniko-project/executor:latest',
+      command: '',
+      args: '',
+      ttyEnabled: false
+    )
+  ]
+) {
+  node(POD_LABEL) {
+    container('kaniko') {
+      sh '''#!/busybox/sh
+      /kaniko/executor \
+        --dockerfile=Dockerfile \
+        --context=git://github.com/Abhiabhi1019/my-node-app.git \
+        --destination=localhost:5000/my-node-app:latest \
+        --insecure \
+        --skip-tls-verify
+      '''
     }
-    stages {
-        stage('Build and Push') {
-            steps {
-                container('kaniko') {
-                    sh '''/kaniko/executor \
-  --context `pwd` \
-  --dockerfile `pwd`/Dockerfile \
-  --destination=registry.local:5000/nodejs-app:v2 \
-  --insecure \
-  --skip-tls-verify'''
-                }
-            }
-        }
-    }
+  }
 }
