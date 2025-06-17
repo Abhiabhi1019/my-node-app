@@ -8,8 +8,7 @@ podTemplate(
                 --dockerfile=Dockerfile \
                 --destination=localhost:5000/my-node-app:latest \
                 --insecure \
-                --skip-tls-verify''',
-      ttyEnabled: false
+                --skip-tls-verify'''
     )
   ],
   volumes: [
@@ -17,17 +16,16 @@ podTemplate(
   ]
 ) {
   node(POD_LABEL) {
-    stage('Clone Repo') {
-      // Make sure your app gets cloned into /workspace/my-node-app
-      dir('my-node-app') {
-        git 'https://github.com/your-username/your-node-app.git'
+    stage('Clone') {
+      dir('/workspace/my-node-app') {
+        // Replace with your repo
+        git 'https://github.com/your-user/your-node-app.git'
       }
     }
 
-    stage('Build Image') {
+    stage('Build') {
       container('kaniko') {
-        echo 'Kaniko is building the image...'
-        // Kaniko runs automatically using args in the containerTemplate, nothing needed here
+        echo 'Kaniko runs with args at container start'
       }
     }
   }
