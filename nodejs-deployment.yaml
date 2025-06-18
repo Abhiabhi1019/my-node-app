@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: nodejs-app
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: nodejs-app
@@ -14,19 +13,19 @@ spec:
     spec:
       containers:
       - name: nodejs-app
-        image: localhost:32000/my-node-app:latest
+        image: abhiabhi007/nodejs-app:latest
         ports:
-        - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nodejs-service
-spec:
-  selector:
-    app: nodejs-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-  type: NodePort
+          - name: http
+            containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 20

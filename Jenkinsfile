@@ -1,32 +1,40 @@
-podTemplate(
-  containers: [
-    containerTemplate(
-      name: 'kaniko',
-      image: 'gcr.io/kaniko-project/executor:latest',
-      command: '/kaniko/executor',
-      args: '''--context=dir:///workspace/my-node-app \
-                --dockerfile=Dockerfile \
-                --destination=localhost:5000/my-node-app:latest \
-                --insecure \
-                --skip-tls-verify'''
-    )
-  ],
-  volumes: [
-    emptyDirVolume(mountPath: '/workspace', memory: false)
-  ]
-) {
-  node(POD_LABEL) {
-    stage('Clone') {
-      dir('/workspace/my-node-app') {
-        // Replace with your repo
-        git 'https://github.com/your-user/your-node-app.git'
-      }
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    projected:
+      sources:
+      - secret:
+          name: regcred
+"""
+        }
     }
-
-    stage('Build') {
-      container('kaniko') {
-        echo 'Kaniko runs with args at container start'
-      }
+    stages {
+        stage('Build and Push') {
+            steps {
+                container('kaniko') {
+                    sh '''/kaniko/executor \
+  --context `pwd` \
+  --dockerfile `pwd`/Dockerfile \
+  --destination=registry.local:32000/nodejs-app:v2 \
+  --insecure \
+  --skip-tls-verify'''
+                }
+            }
+        }
     }
-  }
 }
