@@ -3,17 +3,24 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      command: '/kaniko/executor',
-      args: '--dockerfile=/workspace/my-node-app/Dockerfile --context=dir:///workspace/my-node-app --destination=docker.io/abhiabhi07/my-node-app:latest --insecure --skip-tls-verify'
+      command: '/busybox/cat',
+      ttyEnabled: true
     )
   ],
   volumes: [
-    secretVolume(secretName: 'regcred', mountPath: '/kaniko/.docker')
+    secretVolume(secretName: 'regcred-new', mountPath: '/kaniko/.docker')
   ]
 ) {
   node(POD_LABEL) {
     container('kaniko') {
-      echo "🏗️ Kaniko image build started..."
+      sh '''
+        /kaniko/executor \
+          --dockerfile=/workspace/my-node-app/Dockerfile \
+          --context=dir:///workspace/my-node-app \
+          --destination=docker.io/abhiabhi007/test-image:latest \
+          --insecure \
+          --skip-tls-verify
+      '''
     }
   }
 }
