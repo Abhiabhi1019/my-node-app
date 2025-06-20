@@ -13,7 +13,7 @@ podTemplate(
 ) {
   node(POD_LABEL) {
     container('kaniko') {
-      echo "✅ Kaniko image build initiated"
+      echo "🏗️ Kaniko image build started..."
     }
   }
 }
