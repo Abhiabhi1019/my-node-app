@@ -3,8 +3,14 @@ podTemplate(
         containerTemplate(
             name: 'kaniko',
             image: 'gcr.io/kaniko-project/executor:latest',
-            command: '',
-            args: '--context=dir:///workspace/my-node-app --dockerfile=/workspace/my-node-app/Dockerfile --destination=docker.io/abhiabhi07/my-node-app:latest --insecure --skip-tls-verify'
+            command: '/kaniko/executor',
+            args: [
+                '--dockerfile=/workspace/my-node-app/Dockerfile',
+                '--context=dir:///workspace/my-node-app',
+                '--destination=docker.io/abhiabhi07/my-node-app:latest',
+                '--insecure',
+                '--skip-tls-verify'
+            ]
         )
     ],
     volumes: [
@@ -13,8 +19,8 @@ podTemplate(
 ) {
     node(POD_LABEL) {
         container('kaniko') {
-            echo "Running Kaniko build..."
-            // No need to run anything here. Kaniko runs directly via args.
+            echo '🛠 Kaniko build container running'
+            // No need for shell command, Kaniko runs via entrypoint args
         }
     }
 }
