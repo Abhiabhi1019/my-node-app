@@ -9,21 +9,25 @@ podTemplate(
     )
   ],
   volumes: [
-    secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred')
+    secretVolume(mountPath: '/kaniko/.docker', secretName: 'my-regcred')
   ]
 ) {
   node(POD_LABEL) {
-    stage('Build Docker Image with Kaniko') {
+    stage('Clone Repo') {
+      git url: 'https://github.com/Abhiabhi1019/my-node-app.git'
+    }
+
+    stage('Build Image with Kaniko') {
       container('kaniko') {
         sh '''
-        /kaniko/executor \
-          --context `pwd` \
-          --dockerfile `pwd`/Dockerfile \
-          --destination=docker.io/abhiabhi007/nodejs-app:latest \
-          --skip-tls-verify
+          /kaniko/executor \
+            --context `pwd` \
+            --dockerfile `pwd`/Dockerfile \
+            --destination=docker.io/YOUR_DOCKER_USERNAME/my-node-app:latest \
+            --insecure \
+            --skip-tls-verify
         '''
       }
     }
   }
 }
-
