@@ -11,9 +11,9 @@ spec:
       command:
         - /kaniko/executor
       args:
-        - "--dockerfile=/workspace/Dockerfile"
-        - "--context=dir:///workspace"
-        - "--destination=docker.io/abhiabhi007/my-node-app:latest"
+        - --dockerfile=/workspace/Dockerfile
+        - --context=dir:///workspace
+        - --destination=docker.io/abhiabhi007/my-node-app:latest
       volumeMounts:
         - name: kaniko-secret
           mountPath: /kaniko/.docker
@@ -25,10 +25,10 @@ spec:
     }
   }
   stages {
-    stage('Build and Push with Kaniko') {
+    stage('Build and Push Docker Image') {
       steps {
         container('kaniko') {
-          sh 'echo "Building and pushing image with Kaniko..."'
+          sh 'echo "Kaniko build should run now..."'
         }
       }
     }
