@@ -13,7 +13,7 @@ podTemplate(
   ]
 ) {
   node(POD_LABEL) {
-    stage('Build & Push') {
+    stage('Build and Push') {
       container('kaniko') {
         sh '''
         /kaniko/executor \
