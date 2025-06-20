@@ -16,7 +16,7 @@ podTemplate(
           --context `pwd` \
           --dockerfile `pwd`/Dockerfile \
           --destination=docker.io/abhiabhi007/test-image:latest \
-          --verbosity=debug
+          --verbosity=info
       '''
     }
   }
