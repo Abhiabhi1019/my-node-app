@@ -13,17 +13,17 @@ podTemplate(
   ]
 ) {
   node(POD_LABEL) {
-    stage('Build and Push') {
+    stage('Build Docker Image with Kaniko') {
       container('kaniko') {
         sh '''
         /kaniko/executor \
           --context `pwd` \
           --dockerfile `pwd`/Dockerfile \
-          --destination docker.io/abhiabhi007/nodejs-app:latest \
-          --insecure \
+          --destination=docker.io/abhiabhi007/nodejs-app:latest \
           --skip-tls-verify
         '''
       }
     }
   }
 }
+
