@@ -3,7 +3,8 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      command: 'cat',
+      command: '/busybox/sh',
+      args: ['-c', 'while true; do sleep 30; done'],
       ttyEnabled: true
     )
   ]
