@@ -3,18 +3,20 @@ podTemplate(
     containerTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
-      ttyEnabled: true,
       command: '',
       args: ''
     )
+  ],
+  volumes: [
+    secretVolume(secretName: 'dockerhub-secret', mountPath: '/kaniko/.docker')
   ]
 ) {
   node(POD_LABEL) {
     container('kaniko') {
       sh '''
         /kaniko/executor \
-          --context `pwd` \
-          --dockerfile `pwd`/Dockerfile \
+          --dockerfile=Dockerfile \
+          --context=. \
           --destination=docker.io/abhiabhi007/test-image:latest \
           --verbosity=info
       '''
