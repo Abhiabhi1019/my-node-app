@@ -4,30 +4,22 @@ podTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
       command: '',
-      args: '',
-      ttyEnabled: true
+      args: '''/kaniko/executor
+        --context=dir:///workspace/my-node-app
+        --dockerfile=/workspace/my-node-app/Dockerfile
+        --destination=docker.io/abhiabhi07/my-node-app:latest
+        --insecure
+        --skip-tls-verify
+      '''
     )
   ],
   volumes: [
-    secretVolume(mountPath: '/kaniko/.docker', secretName: 'my-regcred')
+    secretVolume(secretName: 'regcred', mountPath: '/kaniko/.docker')
   ]
 ) {
   node(POD_LABEL) {
-    stage('Clone Repo') {
-      git url: 'https://github.com/Abhiabhi1019/my-node-app.git'
-    }
-
-    stage('Build Image with Kaniko') {
-      container('kaniko') {
-        sh '''
-          /kaniko/executor \
-            --context `pwd` \
-            --dockerfile `pwd`/Dockerfile \
-            --destination=docker.io/YOUR_DOCKER_USERNAME/my-node-app:latest \
-            --insecure \
-            --skip-tls-verify
-        '''
-      }
+    container('kaniko') {
+      // Kaniko will run automatically via args; nothing more needed here
     }
   }
 }
