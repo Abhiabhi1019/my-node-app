@@ -1,26 +1,36 @@
-podTemplate(
-  containers: [
-    containerTemplate(
-      name: 'kaniko',
-      image: 'gcr.io/kaniko-project/executor:v1.20.0',
-      command: '',
-      args: '',
-      ttyEnabled: true
-    )
-  ],
-  volumes: [
-    secretVolume(secretName: 'dockerhub-secret', mountPath: '/kaniko/.docker')
-  ]
-) {
-  node(POD_LABEL) {
-    container('kaniko') {
-      sh '''
-        /kaniko/executor \
-          --dockerfile=Dockerfile \
-          --context=. \
-          --destination=docker.io/abhiabhi007/test-image:latest \
-          --verbosity=info
-      '''
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - /kaniko/executor
+    args:
+    - "--dockerfile=/workspace/Dockerfile"
+    - "--context=/workspace/"
+    - "--destination=docker.io/abhiabhi007/test-image:latest"
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: dockerhub-secret
+"""
+    }
+  }
+  stages {
+    stage('Build and Push Docker Image') {
+      steps {
+        container('kaniko') {
+          sh 'echo "Image build and push started"'
+        }
+      }
     }
   }
 }
