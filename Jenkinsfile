@@ -4,13 +4,13 @@ podTemplate(
       name: 'kaniko',
       image: 'gcr.io/kaniko-project/executor:latest',
       command: '/busybox/sh',
-      args: ['-c', 'while true; do sleep 30; done'],
+      args: '-c while true; do sleep 30; done',
       ttyEnabled: true
     )
   ]
 ) {
   node(POD_LABEL) {
-    stage('Kaniko Build') {
+    stage('Build with Kaniko') {
       container('kaniko') {
         sh '''
           /kaniko/executor \
