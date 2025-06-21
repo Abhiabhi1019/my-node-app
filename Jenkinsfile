@@ -28,7 +28,8 @@ spec:
     stage('Build and Push Docker Image') {
       steps {
         container('kaniko') {
-          sh 'echo "Kaniko build should run now..."'
+          sh 'ls -la /workspace'
+          sh 'cat /workspace/Dockerfile'
         }
       }
     }
