@@ -6,32 +6,34 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-    - name: kaniko
-      image: gcr.io/kaniko-project/executor:latest
-      command:
-        - /kaniko/executor
-      args:
-        - --dockerfile=/workspace/Dockerfile
-        - --context=dir:///workspace
-        - --destination=docker.io/abhiabhi007/my-node-app:latest
-      volumeMounts:
-        - name: kaniko-secret
-          mountPath: /kaniko/.docker
-  volumes:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - /kaniko/executor
+    args:
+    - --dockerfile=/workspace/Dockerfile
+    - --context=dir:///workspace
+    - --destination=docker.io/abhiabhi007/my-node-app:latest
+    - --verbosity=debug
+    volumeMounts:
     - name: kaniko-secret
-      secret:
-        secretName: dockerhub-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: dockerhub-secret
 """
     }
   }
+
   stages {
     stage('Build and Push Docker Image') {
       steps {
         container('kaniko') {
-          sh 'ls -la /workspace'
-          sh 'cat /workspace/Dockerfile'
+          sh 'echo "Kaniko is running..."'
         }
       }
     }
   }
 }
+	
